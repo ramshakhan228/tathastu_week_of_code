@@ -1,0 +1,6 @@
+CP=int(input('Enter cost price of any product\n'))
+SP=int(input('Enter selling price of any product\n'))
+profit=SP-CP
+NEW_SP=(1.05*profit)+CP
+print('Profit is:\n',profit)
+print('New SP after 5% profit:\n',NEW_SP)
