@@ -1,0 +1,7 @@
+a,b=1,22
+print("a=",a)
+print("b=",b)
+a,b=b,a
+print("Swapped numbers are")
+print("a=",a)
+print("b=",b)
