@@ -1,0 +1,124 @@
+import speech_recognition as sr
+import os
+from gtts import gTTS
+import datetime
+import warnings
+import calendar
+import random
+import wikipedia
+
+#ignore any warning messages
+warnings.filterwarnings('ignore')
+
+#record audio and return it as a string
+def recordAudio():
+
+    #recognize the audio
+    r=sr.Recognizer() #creating a recognizer object
+
+    #Open the microphone and start recording
+    with sr.Microphone() as source:
+        print('Say something')
+        audio=r.listen(source)
+
+    #Use google speech recognition
+    data=' '
+    try:
+        data=r.recognize_google(audio)
+        print('you said-'+data)
+    except sr.UnknownValueError: #check for unknown errors
+        print('Google speech Recognition Could not understand the audio,Unknown error')
+    except sr.RequestError as e:
+        print('Request results from google speech recognition service error'+e)
+    return data
+
+def assistantResponse(text):
+    print(text)
+    #Convert the text to speech
+    myobj=gTTS(text=text, lang='en',slow=False)
+
+    #Save the converted audio to a file
+    myobj.save('assistantResponse.mp3')
+
+    #play the converted file
+    os.system('assistantResponse.mp3')
+
+#A function fore wake word or phrase
+def wakeword(text):
+    WAKE_WORD=['hey computer','okay computer'] #list of wake words
+
+    text=text.lower() #converting the text to lower case
+
+    #Check to see if the users command/text contains a wake word
+    for phrase in text:
+        if phrase in text:
+            return True
+ #if the wake word is not found
+    return False
+
+#a function to get the date
+def getDate():
+
+    now=datetime.datetime.now()
+    my_date=datetime.datetime.today()
+    weekday=calendar.day_name[my_date.weekday()]  #e.g Friday
+    monthNum=now.month
+    dayNum= now.day
+    #A list of months
+    month_name=['January','February','March','April','May','June','July','August','September','October','November','December']
+
+    #A list of ordinal numbers
+    ordinalNumbers=['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','13th','14th','15th','16th','17th','18th','19th','20th','21st','22nd','23rd','24th','25th','26th','27th','28th','29th','30th','31st']
+
+    return 'Today is '+weekday+' '+ month_name[monthNum-1]+' the ' + ordinalNumbers[dayNum-1]+'.'
+
+#a function is return a random greeting response
+def greeting(text):
+
+    #creating input
+    GREETING_INPUT=['hi','hola','hey','greetings','wakeup','hello']
+
+    #greeting responses
+    GREETING_RESPONSES=['howdy','whata good','hello','hey there']
+
+    #if the user input is a greeting then return a randomly choosen greeting response
+    for word in text.split():
+        if word.lower() in GREETING_INPUT:
+            return random.choice(GREETING_RESPONSES)+'.'
+
+    #if no greeting was detected then return a empty string
+    return  ' '
+#a function to get a function first and last name from the text
+def getPerson(text):
+
+    wordList=text.split()
+    
+    for i in range(0,len(wordList)):
+                    if i+3<=len(wordList)-1 and wordList[i].lower()=='who' and wordList(i+1).lower()=='is':
+                     return (wordList[i+2]+' '+wordList[i+3])
+
+while True:
+
+           #Record the audio
+            text=recordAudio()
+            response=''
+
+        #Check for the wake word
+            if wakeword(text)==True:
+
+               #check for greetings
+                response=response+greeting(text)
+
+               #check the date
+                if ('date' in text):
+                    get_date=getDate()
+                    response=response+' '+ get_date
+
+               #check to see the user if say "who is"
+                if ('who is' in text):
+                    person=getPerson(text)
+                    wiki=wikipedia.summary(person,sentence=2)
+                    response=response+' '+wiki
+
+               #Have the assistant respond back using audio and text for response
+                assistantResponse(response)    
